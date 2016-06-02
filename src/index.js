@@ -1,8 +1,10 @@
-import $ from 'jquery';
+import jq from 'jquery';
 
-import osc from './oscillator'
+import * as osc from './oscillator'
+import * as c from './constants';
 
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
+window.AudioContext = window.AudioContext ||
+                      window.webkitAudioContext;
 
 window.requestAnimationFrame = (function(){
   return window.requestAnimationFrame  ||
@@ -10,17 +12,22 @@ window.requestAnimationFrame = (function(){
     window.mozRequestAnimationFrame    ||
     window.oRequestAnimationFrame      ||
     window.msRequestAnimationFrame     ||
-    function(callback){
+    function(callback) {
       window.setTimeout(callback, 1000 / 60);
     };
 })();
 
-const A = 0;
-const B = 1;
+const audioCtx = new AudioContext();
 
-const canvasElA = document.getElementById('canvas-osc-a');
-const ctxA = canvasEl.getContext('2d');
+//const canvasElA = document.getElementById('canvas-osc-a');
+//const ctxA = canvasElA.getContext('2d');
 
-const canvasElB = document.getElementById('canvas-osc-b');
-const ctxB = canvasEl.getContext('2d');
+//const canvasElB = document.getElementById('canvas-osc-b');
+//const ctxB = canvasElB.getContext('2d');
 
+const STATE = {
+  oscillators: osc.getInitialOscs(audioCtx)
+};
+
+
+STATE.oscillators[c.A].playFreq(2000);
