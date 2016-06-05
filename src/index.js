@@ -1,10 +1,10 @@
-import jq from 'jquery';
+import * as rx from 'rxjs';
 
-import * as osc from './oscillator'
 import * as c from './constants';
+import * as osc from './oscillator'
+import * as nEvents from './note-events';
 
-window.AudioContext = window.AudioContext ||
-                      window.webkitAudioContext;
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 window.requestAnimationFrame = (function(){
   return window.requestAnimationFrame  ||
@@ -26,8 +26,25 @@ const audioCtx = new AudioContext();
 //const ctxB = canvasElB.getContext('2d');
 
 const STATE = {
-  oscillators: osc.getInitialOscs(audioCtx)
+  oscillators: osc.getInitialOscs(audioCtx),
+  notesDown: {}
 };
 
+rx.Observable.fromEvent(document.body, 'keydown')
+  .map(nEvents.processKeyDown)
+  .subscribe((code) => {
+    STATE.oscillators[c.A].playFreq(code);
+  });
 
-STATE.oscillators[c.A].playFreq(2000);
+
+rx.Observable.fromEvent(document.body, 'keyup')
+  .map(nEvents.processKeyUp)
+  .subscribe((code) => {
+    STATE.oscillators[c.A].stop();
+  });
+
+
+
+
+//STATE.oscillators[c.A].playFreq(750);
+//STATE.oscillators[c.B].playFreq(755);
