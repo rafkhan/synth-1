@@ -64,10 +64,10 @@ export function getOsc(ctx, type, dest) {
 export function getInitialOscs(ctx) {
   const oscillators = [
     getOsc(ctx, 'sine', ctx.destination),
-    getOsc(ctx, 'sine', ctx.destination)
+    getOsc(ctx, 'sawtooth', ctx.destination)
   ];
 
-  oscillators[c.B].enabled = false;
+  oscillators[c.B].enabled = true;
 
   return oscillators;
 }

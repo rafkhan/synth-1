@@ -1,9 +1,10 @@
 import * as midiutils from 'midiutils';
 
+//remove redundancy here
 export function processKeyDown(keyEvent) {
-  return midiutils.noteNumberToFrequency(keyEvent.keyCode);
+  return midiutils.noteNumberToName(keyEvent.keyCode);
 }
 
 export function processKeyUp(keyEvent) {
-  return keyEvent.keyCode;
+  return midiutils.noteNumberToName(keyEvent.keyCode);
 }

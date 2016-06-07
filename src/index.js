@@ -1,4 +1,5 @@
 import * as rx from 'rxjs';
+import * as midiutils from 'midiutils';
 
 import * as c from './constants';
 import * as osc from './oscillator'
@@ -27,20 +28,38 @@ const audioCtx = new AudioContext();
 
 const STATE = {
   oscillators: osc.getInitialOscs(audioCtx),
-  notesDown: {}
+  notesDown: []
 };
+
+function playNoteName(noteName) {
+  STATE.notesDown.push(noteName);
+
+  const freq = midiutils.noteNumberToFrequency(
+      midiutils.noteNameToNoteNumber(noteName));
+
+  STATE.oscillators[c.A].playFreq(freq);
+  STATE.oscillators[c.B].playFreq(freq);
+}
+
 
 rx.Observable.fromEvent(document.body, 'keydown')
   .map(nEvents.processKeyDown)
-  .subscribe((code) => {
-    STATE.oscillators[c.A].playFreq(code);
-  });
+  .subscribe(playNoteName);
 
 
 rx.Observable.fromEvent(document.body, 'keyup')
   .map(nEvents.processKeyUp)
-  .subscribe((code) => {
-    STATE.oscillators[c.A].stop();
+  .subscribe((noteName) => {
+    // REMOVE NOTE NAME FROM ARRAY
+
+    let len = STATE.notesDown.length;
+
+    if(len > 0) {
+      playNoteName();
+    } else {
+      STATE.oscillators[c.A].stop();
+    }
+
   });
 
 
