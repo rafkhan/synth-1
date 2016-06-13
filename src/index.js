@@ -1,4 +1,5 @@
 import * as rx from 'rxjs';
+import * as R from 'ramda';
 import * as midiutils from 'midiutils';
 
 import * as c from './constants';
@@ -26,19 +27,21 @@ const audioCtx = new AudioContext();
 //const canvasElB = document.getElementById('canvas-osc-b');
 //const ctxB = canvasElB.getContext('2d');
 
-const STATE = {
+let STATE = {
   oscillators: osc.getInitialOscs(audioCtx),
-  notesDown: []
+  notesDown: {}
 };
 
 function playNoteName(noteName) {
-  STATE.notesDown.push(noteName);
+  STATE.notesDown[noteName] = true;
 
   const freq = midiutils.noteNumberToFrequency(
       midiutils.noteNameToNoteNumber(noteName));
 
-  STATE.oscillators[c.A].playFreq(freq);
-  STATE.oscillators[c.B].playFreq(freq);
+  //STATE.oscillators[c.A].playFreq(freq);
+  //STATE.oscillators[c.B].playFreq(freq);
+
+  console.log('dn', STATE.notesDown);
 }
 
 
@@ -50,16 +53,18 @@ rx.Observable.fromEvent(document.body, 'keydown')
 rx.Observable.fromEvent(document.body, 'keyup')
   .map(nEvents.processKeyUp)
   .subscribe((noteName) => {
-    // REMOVE NOTE NAME FROM ARRAY
 
-    let len = STATE.notesDown.length;
+    if(STATE.notesDown[noteName]) {
+      delete STATE.notesDown[noteName];
+    }
 
-    if(len > 0) {
-      playNoteName();
+    if(Object.keys.length > 0) {
+      playNoteName(noteName);
     } else {
       STATE.oscillators[c.A].stop();
     }
 
+    console.log('up', STATE.notesDown);
   });
 
 
